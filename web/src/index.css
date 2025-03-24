@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+
+@plugin "daisyui/theme" {
+  name: "Catppuccin Mocha";
+  default: true;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: hsl(240deg, 21%, 15%);
+  --color-base-200: hsl(240deg, 21%, 12%);
+  --color-base-300: hsl(240deg, 23%, 9%);
+  --color-base-content: hsl(226deg, 64%, 88%);
+  --color-primary: hsl(189deg, 71%, 73%);
+  --color-primary-content: hsl(240deg, 23%, 9%);
+  --color-secondary: hsl(199deg, 76%, 69%);
+  --color-secondary-content: oklch(26% 0.079 36.259);
+  --color-accent: hsl(267deg, 84%, 81%);
+  --color-accent-content: hsl(240deg, 23%, 9%);
+  --color-neutral: hsl(316deg, 72%, 86%);
+  --color-neutral-content: hsl(240deg, 23%, 9%);
+  --color-info: hsl(217deg, 92%, 76%);
+  --color-info-content: hsl(240deg, 23%, 9%);
+  --color-success: hsl(115deg, 54%, 76%);
+  --color-success-content: hsl(240deg, 23%, 9%);
+  --color-warning: hsl(41deg, 86%, 83%);
+  --color-warning-content: hsl(240deg, 23%, 9%);
+  --color-error: hsl(343deg, 81%, 75%);
+  --color-error-content: hsl(240deg, 23%, 9%);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
