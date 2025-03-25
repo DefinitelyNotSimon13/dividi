@@ -1,57 +1,53 @@
 services:
-  # backend:
-  #   build:
-  #     context: ./server
-  #     dockerfile: Dockerfile.backend
-  #   depends_on:
-  #     - redis
-  #   ports:
-  #     - "8000:8000"
-  #   environment:
-  #     RUST_LOG: "trace"
+  backend:
+    image: definitelynotsimon13/dividi-backend:latest
+   # depends_on:
+    #   - redis
+    environment:
+      RUST_LOG: "trace"
 
   frontend:
-    build:
-      context: ./web
-      dockerfile: Dockerfile.frontend
-    ports:
-      - "80:80"
+    image: definitelynotsimon13/dividi-frontend:latest
+    deploy:
+      mode: replicated
+      replicas: 3
     labels:
-      - "traefik.http.routers.frontend.rule=Host(`frontend.docker.localhost`)"
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`dividi.hauptspeicher.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
 
   # redis:
   #   image: redis:7.4.2-alpine
   #   restart: always
-  #   ports: 
-  #     - '6379:6379'
   #   volumes: 
   #     - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
   #     - cache:/data
   #   environment:
   #     - REDIS_PASSWORD=password
   #     - REDIS_PORT=6379
-  #
-  # redisinsight:
-  #   image: redis/redisinsight:latest
-  #   restart: always
-  #   ports:
-  #     - '5540:5540'
-  #   volumes:
-  #     - redisinsight:/data
 
+  reverse-proxy:
+    image: traefik:v3.3
+    command: 
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=simon21.blum@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
 
-#   reverse-proxy:
-#     image: traefik:v3.3
-#     command: --api.insecure=true --providers.docker
-#     ports:
-#       - "80:80"
-#       - "8080:8080"
-#     volumes:
-#       - /var/run/docker.sock:/var/run/docker.sock
-#
-# volumes:
-#   cache:
-#     driver: local
-#   redisinsight:
-#     driver: local
+volumes:
+  letsencrypt:
+  cache:
+    driver: local
+  redisinsight:
+    driver: local
 

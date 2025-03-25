@@ -38,27 +38,27 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .try_init()?;
 
-    trace!("initializing redis...");
-    let client = redis::Client::open("redis://127.0.0.1/")?;
-
-    trace!("checking redis connection...");
-
-    #[cfg(debug_assertions)]
-    {
-        let test_key = "test_key";
-        let test_value = 42;
-
-        let mut con = client.get_connection()?;
-        let _: () = con.set(test_key, test_value)?;
-
-        let rec: i32 = con.get(test_key)?;
-
-        assert_eq!(
-            rec, test_value,
-            "assuring {} was set to {} to verify connection",
-            test_key, test_value
-        )
-    }
+    // trace!("initializing redis...");
+    // let client = redis::Client::open("redis://127.0.0.1/")?;
+    //
+    // trace!("checking redis connection...");
+    //
+    // #[cfg(debug_assertions)]
+    // {
+    //     let test_key = "test_key";
+    //     let test_value = 42;
+    //
+    //     let mut con = client.get_connection()?;
+    //     let _: () = con.set(test_key, test_value)?;
+    //
+    //     let rec: i32 = con.get(test_key)?;
+    //
+    //     assert_eq!(
+    //         rec, test_value,
+    //         "assuring {} was set to {} to verify connection",
+    //         test_key, test_value
+    //     )
+    // }
 
     trace!("initializing app state...");
 
