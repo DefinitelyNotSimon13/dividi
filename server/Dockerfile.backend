@@ -1,0 +1,16 @@
+FROM rust:latest AS builder
+WORKDIR /app
+
+COPY Cargo.toml Cargo.lock .
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+RUN cargo build --release
+
+COPY . .
+RUN touch src/main.rs
+RUN cargo build --release
+
+FROM gcr.io/distroless/cc-debian12 AS deploy
+WORKDIR /app
+COPY --from=builder /app/target/release/dividi .
+
+ENTRYPOINT ["./dividi"]

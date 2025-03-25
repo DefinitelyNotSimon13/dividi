@@ -24,6 +24,7 @@
           packages = with pkgs; [
             bacon
             bun
+            redis
           ];
           nativeBuildInputs = with pkgs; [
           ];

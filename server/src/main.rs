@@ -7,6 +7,7 @@ use axum::routing::{delete, get};
 use axum::{Router, routing::post};
 use handler::files::upload_file;
 use handler::files::{delete_file, download_file, get_files};
+use redis::Commands;
 use state::AppState;
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::{info, trace};
@@ -19,11 +20,16 @@ mod uploaded_file;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    println!(
+        "running {} {}",
+        env!("CARGO_CRATE_NAME"),
+        env!("CARGO_PKG_VERSION")
+    );
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
                 format!(
-                    "{}=debug,tower_http=debug,axum::rejection=trace",
+                    "{}=trace,tower_http=debug,axum::rejection=trace",
                     env!("CARGO_CRATE_NAME")
                 )
                 .into()
@@ -31,6 +37,28 @@ async fn main() -> anyhow::Result<()> {
         )
         .with(tracing_subscriber::fmt::layer())
         .try_init()?;
+
+    trace!("initializing redis...");
+    let client = redis::Client::open("redis://127.0.0.1/")?;
+
+    trace!("checking redis connection...");
+
+    #[cfg(debug_assertions)]
+    {
+        let test_key = "test_key";
+        let test_value = 42;
+
+        let mut con = client.get_connection()?;
+        let _: () = con.set(test_key, test_value)?;
+
+        let rec: i32 = con.get(test_key)?;
+
+        assert_eq!(
+            rec, test_value,
+            "assuring {} was set to {} to verify connection",
+            test_key, test_value
+        )
+    }
 
     trace!("initializing app state...");
 
